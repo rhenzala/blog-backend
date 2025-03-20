@@ -2,6 +2,7 @@ const prisma = require("../prisma/prismaClient");
 
 
 exports.getPosts = async (req, res) => {
+    console.log("req,user :",req.user)
     try {
         let posts;
         if (req.user && req.user.role === "ADMIN") {
@@ -27,7 +28,7 @@ exports.getPosts = async (req, res) => {
 }
 
 exports.createPost = async (req, res) => {
-    if (res.user.role !== "ADMIN") return res.sendStatus(403).json({message: "Unauthorized"})
+    if (req.user.role !== "ADMIN") return res.sendStatus(403).json({message: "Unauthorized"})
 
     const { title, content, published } = req.body;
     try {

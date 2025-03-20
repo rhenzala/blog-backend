@@ -21,22 +21,24 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
     const { username, password } = req.body;
-    try {
-        const user = await prisma.user.findUnique({ where: { username } });
-        if (!user) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
+    
+    const user = await prisma.user.findUnique({ 
+        where: { username }, 
+        select: { id: true, username: true, role: true, password: true } 
+    });
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-
-        return res.json({ token: generateToken(user.id) });
-    } catch (err) {
-        return res.status(500).json({ error: "Internal server error" });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    const token = generateToken(user.id)
+
+    res.json({
+        token,
+        user: { id: user.id, username: user.username, role: user.role } 
+    });
 };
+
 
 
 exports.getMe = async (req, res) => {
