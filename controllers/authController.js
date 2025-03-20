@@ -23,22 +23,17 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
     try {
         const user = await prisma.user.findUnique({ where: { username } });
-
-        console.log("User found:", user); // Check if user is retrieved
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log("Password match:", isMatch); // Check if passwords match
-
         if (!isMatch) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
         return res.json({ token: generateToken(user.id) });
     } catch (err) {
-        console.error("Login error:", err);
         return res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -46,4 +41,13 @@ exports.login = async (req, res) => {
 
 exports.getMe = async (req, res) => {
     res.json(req.user);
+}
+
+exports.logout = (req, res, next) => {
+    req.logout((err) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/");
+    });
 }
