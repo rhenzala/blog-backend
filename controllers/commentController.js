@@ -11,12 +11,25 @@ exports.getComments = async (req, res) => {
 };
 
 exports.createComment = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: "Unauthorized" }); 
+  }
+
   const { content } = req.body;
-  const comment = await prisma.comment.create({
-    data: { content, authorId: req.user.id, postId: req.params.postId },
-  });
-  res.status(201).json(comment);
+  try {
+    const comment = await prisma.comment.create({
+      data: { 
+        content, 
+        authorId: req.user.id, 
+        postId: req.params.postId 
+      },
+    });
+    res.status(201).json(comment);
+  } catch (error) {
+    res.status(500).json({ error: error.message }); 
+  }
 };
+
 
 exports.updateComment = async (req, res) => {
   const comment = await prisma.comment.update({
