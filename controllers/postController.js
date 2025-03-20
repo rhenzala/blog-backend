@@ -6,12 +6,18 @@ exports.getPosts = async (req, res) => {
         let posts;
         if (req.user && req.user.role === "ADMIN") {
             posts = await prisma.post.findMany({
-                include: {author: true, comments: true},
+                include: {
+                    author: { select: { username: true } }, 
+                    comments: true
+                },
             });
         } else {
             posts = await prisma.post.findMany({
                 where: { published: true},
-                include: {author: true, comments: true},
+                include: {
+                    author: { select: { username: true } }, 
+                    comments: true
+                },
             })
         }
         res.json(posts);
