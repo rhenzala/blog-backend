@@ -25,7 +25,7 @@ app.use(cors({
 
 app.use("/api/auth", routes.auth);
 app.use("/api/posts", routes.posts);
-app.use("/api/comments", routes.comments);
+app.use("/api/posts/:postId/comments", routes.comments);
 
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
