@@ -43,11 +43,6 @@ exports.getMe = async (req, res) => {
     res.json(req.user);
 }
 
-exports.logout = (req, res, next) => {
-    req.logout((err) => {
-      if (err) {
-        return next(err);
-      }
-      res.redirect("/");
-    });
-}
+exports.logout = async (req, res) => {
+    res.json({ message: "Logged out successfully" });
+};
