@@ -2,7 +2,6 @@ const prisma = require("../prisma/prismaClient");
 
 
 exports.getPosts = async (req, res) => {
-    console.log("req,user :",req.user)
     try {
         let posts;
         if (req.user && req.user.role === "ADMIN") {
@@ -23,12 +22,28 @@ exports.getPosts = async (req, res) => {
         }
         res.json(posts);
     } catch (err) {
-        res.sendStatus(500).json({ error: err.message });
+        res.send(500).json({ error: err.message });
+    }
+}
+
+exports.getPostById = async (req, res) => {
+    try {
+        let post = await prisma.post.findUnique({
+            where: { id: req.params.id },
+            include: {
+                author: { select: { username: true } }, 
+                comments: true
+            },
+        });
+        
+        res.json(post);
+    } catch (err) {
+        res.send(500).json({ error: err.message });
     }
 }
 
 exports.createPost = async (req, res) => {
-    if (req.user.role !== "ADMIN") return res.sendStatus(403).json({message: "Unauthorized"})
+    if (req.user.role !== "ADMIN") return res.send(403).json({message: "Unauthorized"})
 
     const { title, content, published } = req.body;
     try {
@@ -40,14 +55,14 @@ exports.createPost = async (req, res) => {
                 authorId: req.user.id,
             }
         });
-        res.sendStatus(201).json(post);
+        res.sendStatus(201);
     } catch (err) {
-        res.sendStatus(500).json({error: err.message});
+        res.sendStatus(500);
     }
 }
 
 exports.updatePost = async (req, res) => {
-    if (req.user.role !== "ADMIN") return res.sendStatus(403).json({message: "Unauthorized"});
+    if (req.user.role !== "ADMIN") return res.send(403).json({message: "Unauthorized"});
     const post = await prisma.post.update({ 
         where: { id: req.params.id},
         data: req.body
@@ -56,7 +71,7 @@ exports.updatePost = async (req, res) => {
 }
 
 exports.deletePost = async (req, res) => {
-    if (req.user.role !== "ADMIN") return res.sendStatus(403).json({message: "Unauthorized"});
+    if (req.user.role !== "ADMIN") return res.send(403).json({message: "Unauthorized"});
     await prisma.post.delete({ where: { id: req.params.id } });
     res.json({ message: "Post deleted"});
 }
