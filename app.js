@@ -10,18 +10,13 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: ["https://mini-blog-admin.vercel.app/", "https://mini-blog-pi.vercel.app/"], 
+    origin: ["https://mini-blog-admin.vercel.app", "https://mini-blog-pi.vercel.app"], 
     credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], 
     allowedHeaders: ["Content-Type", "Authorization"], 
-  }));
-  
-  app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Credentials", "true");
-    next();
-  });
+}));
 
-  app.options("*", cors());
+app.options("*", cors());
 
 app.use("/api/public/posts", publicRoutes);
 
