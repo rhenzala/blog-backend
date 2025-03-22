@@ -22,6 +22,6 @@ node --watch app.js
 ```
 or if prefer using script:
 ```
-npm start
+npm run start
 ```
 
