@@ -30,4 +30,4 @@ app.use("/api/posts", routes.posts);
 app.use("/api/comments", routes.comments);
 
 
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
+app.listen(PORT, "0.0.0.0", () => console.log(`Server listening on port ${PORT}!`));
