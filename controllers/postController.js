@@ -22,7 +22,7 @@ exports.getPosts = async (req, res) => {
         }
         res.json(posts);
     } catch (err) {
-        res.send(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 }
 
@@ -38,13 +38,11 @@ exports.getPostById = async (req, res) => {
         
         res.json(post);
     } catch (err) {
-        res.send(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
 }
 
 exports.createPost = async (req, res) => {
-    if (req.user.role !== "ADMIN") return res.send(403).json({message: "Unauthorized"})
-
     const { title, content, published } = req.body;
     try {
         const post = await prisma.post.create({
@@ -55,14 +53,15 @@ exports.createPost = async (req, res) => {
                 authorId: req.user.id,
             }
         });
-        res.sendStatus(201);
+        res.status(201).json(post);
     } catch (err) {
-        res.sendStatus(500);
+        console.error("Error creating post:", err);
+        res.status(500).json({ error: err.message });
     }
 }
 
 exports.updatePost = async (req, res) => {
-    if (req.user.role !== "ADMIN") return res.send(403).json({message: "Unauthorized"});
+    if (req.user.role !== "ADMIN") return res.status(403).json({message: "Unauthorized"});
     const post = await prisma.post.update({ 
         where: { id: req.params.id},
         data: req.body
@@ -71,7 +70,7 @@ exports.updatePost = async (req, res) => {
 }
 
 exports.deletePost = async (req, res) => {
-    if (req.user.role !== "ADMIN") return res.send(403).json({message: "Unauthorized"});
+    if (req.user.role !== "ADMIN") return res.status(403).json({message: "Unauthorized"});
     await prisma.post.delete({ where: { id: req.params.id } });
     res.json({ message: "Post deleted"});
 }
