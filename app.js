@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const routes = require("./routes/index");
+const publicRoutes = require("./routes/public");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -22,17 +23,11 @@ app.use(cors({
 
   app.options("*", cors());
 
+app.use("/api/public/posts", publicRoutes);
+
 app.use("/api/auth", routes.auth);
 app.use("/api/posts", routes.posts);
 app.use("/api/comments", routes.comments);
 
 
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}!`));
-
-
-
- 
-
-
-
-
